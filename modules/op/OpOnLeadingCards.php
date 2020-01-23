@@ -1,17 +1,23 @@
 <?php
-    require_once "OpOnStudents.php";
-    require_once "../Connect.php";
-//借书
-    //查询此学生是否有过期情况
-    //自动查询是否还有书
-    //自动查询专业or非专业
-//还书
-    //查询是否过期还书
-    //自动查询专业or非专业
+/**
+ * 此函数库用于数据库中与借书卡相关信息的管理与查询
+ *
+ * @author v25bh145
+ * @version 1.00
+ *
+ * @function QueryDelay
+ * @function CreateLeadingCards
+ * @function DeleteLeadingBooks
+ */
+include_once "OpOnStudents.php";
+include_once "OpOnBooks.php";
+include_once "../connect.php";
 
 function QueryDelay($id)
-    //查询此学生是否有过期情况
-    //有：true，无：false
+    /**
+     * 查询此学生是否有过期情况
+     * 有：true，无：false
+     */
 {
     $res = false;
     $conn = Connect();
@@ -33,7 +39,12 @@ function QueryDelay($id)
 }
 
 function CreateLeadingCards($studentID, $bookID, $dateTime)
-    //借书
+    /**
+     * 借书
+     * @param $studentID
+     * @param $bookID
+     * @param $dateTime
+     */
 {
     $conn = Connect();
     UseDatabase($conn);
@@ -45,13 +56,13 @@ function CreateLeadingCards($studentID, $bookID, $dateTime)
     {
         die("借出书目达到上限");
     }
-    AddInLibrary($bookID);
+
     AddOutLibrary($bookID);
 
     date_default_timezone_set("Asia/Shanghai");
     $nowTime = date("y-m-d H:i:s");
 
-    $returnTime = strtotime($nowTime + $dateTime * 24 * 3600);
+    $returnTime = strtotime($nowTime) + $dateTime * 24 * 3600;
     $returnTime = date("y-m-d H:i:s", $returnTime);
 
     $sql = "insert into leadingCards (bookID, studentID, returnTime) values (?, ?, ?);";
@@ -64,12 +75,15 @@ function CreateLeadingCards($studentID, $bookID, $dateTime)
     else
         AddBorrowNotPro($studentID, 1);
 
-
     return true;
 }
 
 function DeleteLeadingBooks($studentID, $bookID)
-    //还书
+    /**
+     * 还书
+     * @param $studentID
+     * @param $bookID
+     */
 {
     $conn = Connect();
     UseDatabase($conn);
@@ -80,7 +94,8 @@ function DeleteLeadingBooks($studentID, $bookID)
     $statement->execute();
 
     $res = $statement->get_result()->fetch_array(MYSQLI_ASSOC);
-    if($res["id"] == null)
+    $id = $res['id'];
+    if($id == null)
         die("没有查询到借书卡");
 
     date_default_timezone_set("Asia/Shanghai");
@@ -91,7 +106,7 @@ function DeleteLeadingBooks($studentID, $bookID)
         SetForbidden($studentID, 7);
     }
 
-    $sql = "delete from leadintCards where id = ?";
+    $sql = "delete from leadingCards where id = ?;";
     $statement = $conn->prepare($sql);
     $statement->bind_param("s", $id);
     $statement->execute();
@@ -102,5 +117,4 @@ function DeleteLeadingBooks($studentID, $bookID)
         AddBorrowNotPro($studentID, -1);
 
     AddInLibrary($bookID);
-    AddOutLibrary($bookID);
 }

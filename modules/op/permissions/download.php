@@ -1,6 +1,22 @@
 <?php
+/**
+ * 此文件用于管理员进行数据文件下载操作
+ *
+ * @author v25bh145
+ * @version 1.00
+ */
+include_once "information.php";
+Examine();
+
 ob_clean();
-$filename = "学生信息.xlsx";
+$which = $_POST['optionsRadios'];
+if($which == "option1")
+    $filename = "学生信息.xlsx";
+else if($which == "option2")
+    $filename = "图书信息.xlsx";
+else
+    die("未知错误？？");
+
 $filepath = '../../../bin/'.$filename;
 
 if(!file_exists($filepath)){
@@ -31,5 +47,3 @@ while(!feof($fp)&&$fileSize-$buffer_count>0){
     echo $data;
 }
 fclose($fp);
-
-?>

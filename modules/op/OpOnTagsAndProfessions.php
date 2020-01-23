@@ -1,14 +1,25 @@
 <?php
-    require_once ("../Connect.php");
-
+/**
+ * 此函数库用于数据库中与标签或专业相关信息的管理与查询
+ *
+ * @author v25bh145
+ * @version 1.00
+ *
+ * @function QueryTags()
+ * @function AddProfession()
+ * @function QueryProfessionsName()
+ * @function QQueryProfessionsName()
+ * @function QueryProfessionsID()
+ */
+include_once "../connect.php";
     function QueryTags($id)
-        //系统操作，根据输入的id返回标签名称
+        /**
+         * 根据输入的id返回标签名称
+         * @param $id
+         */
     {
         $conn = Connect();
         UseDatabase($conn);
-
-        if($_POST["id"] != null)
-            $id = $_POST["id"];
 
         $statement = $conn->prepare("select name from tags where id = ?;");
         $statement->bind_param("s",$id);
@@ -21,14 +32,14 @@
 
 
 
-    function AddProfessions($professionName)
-        //添加专业，修改失败返回false，否则返回true
+    function AddProfession($professionName)
+        /**
+         * 添加专业，修改失败返回false，否则返回true
+         * @param $professionName
+         */
     {
         $conn = Connect();
         UseDatabase($conn);
-
-        if($_POST["professionName"] != null)
-            $professionName = $_POST["professionName"];
 
         $statement = $conn->prepare("insert into professions(name) values (?);");
         $statement->bind_param("s",$professionName);
@@ -38,14 +49,14 @@
         return true;
     }
 
-    function QueryProfessionsID($id)
-        //系统操作，根据输入的id返回专业名称
+    function QueryProfessionsName($id)
+        /**
+         * 根据输入的id返回专业名称
+         * @param $id
+         */
     {
         $conn = Connect();
         UseDatabase($conn);
-
-        if($_POST["id"] != null)
-            $id = $_POST["id"];
 
         $statement = $conn->prepare("select name from professions where id = ?;");
         $statement->bind_param("s",$id);
@@ -54,14 +65,14 @@
         $result = $statement->get_result()->fetch_assoc();
         return $result["name"];
     }
-    function QueryProfessionsName($name)
-        //系统操作，根据输入的专业名称返回id
+    function QueryProfessionsID($name)
+        /**
+         * 根据输入的专业名称返回id
+         * @param $name
+         */
     {
         $conn = Connect();
         UseDatabase($conn);
-
-        if($_POST["name"] != null)
-            $name = $_POST["name"];
 
         $statement = $conn->prepare("select id from professions where name = ?;");
         $statement->bind_param("s",$name);
@@ -71,9 +82,4 @@
         $result = $statement->get_result()->fetch_assoc();
         return $result["id"];
     }
-AddProfessions("智能与计算");
-AddProfessions("数学");
-AddProfessions("临床医学");
-AddProfessions("养鱼");
-AddProfessions("咕咕咕");
-AddProfessions("软件工程");
+
